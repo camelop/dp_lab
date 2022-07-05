@@ -53,9 +53,9 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
             with open(output_file, "r") as f:
                 internal_results = json.load(f)
                 dp_results = internal_results["dp_results"]
-                internal_measurement = internal_results["measurements"]
+                internal_measurements = internal_results["measurements"]
         result["_dp_results"] = dp_results
-        result.update(internal_measurement)
+        result.update(internal_measurements)
         result.update(external_measurements)
     else:
         raise ValueError(f"Unknown mode '{mode}'")
