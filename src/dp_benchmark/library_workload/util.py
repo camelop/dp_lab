@@ -7,7 +7,7 @@ import numpy as np
 from dp_benchmark.monitor import measure_func_workload
 
 
-read_input_file = partial(np.loadtxt, skiprows=1)
+read_input_file = partial(np.loadtxt, skiprows=0)
 
 
 def workload_main(evaluate_func, unparsed_args=None):
