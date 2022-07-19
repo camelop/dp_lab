@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-
 setup(
     name = "dp_benchmark",
     version = "0.0.1",
@@ -10,14 +9,17 @@ setup(
     install_requires=[
         "psutil",
         "numpy",
+        "tinydb",
+        "tqdm",
+        "scipy",
         "diffprivlib==0.5.2",
         "python-dp==1.1.1",
+        # "opendp==0.4.0",
     ],
     entry_points={
         'console_scripts': [
-            'dpbench = dp_benchmark.main:main',
-            # 'dpbench_gen',
-            # 'dpbench_plot',
+            'dpbench_run = dp_benchmark.main:main',
+            'dpbench_exp = dp_benchmark.experiments:main',
         ],
     },
 )

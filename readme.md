@@ -1,19 +1,37 @@
-## How to run the experiments in the benchmark
+## Installation
 
-1. Clone the repo, switch the working directory, and install the dependencies
-    ```
-    git clone ***
-    cd dp_benchmark
-    pip install -e .
-    ```
-2. Run the experiment with CLI
-    ```sh
-    dpbench <library> <operation> <input_file> <output_file> <other options>
-    ```
-    For example:
-    ```sh
-    dpbench pydp sum data/1.csv data/1.json -f -r 1000
-    ```
+Clone the repo, switch the working directory, and install the dependencies
+```
+git clone ***
+cd dp_benchmark
+pip install -e .
+```
+
+## How to run experiments in the benchmark
+
+Generate the experiment commands, this will generate an `./exp.db.json` file under the working directory (you can also use `--location` to specify a different place).
+
+```sh
+dpbench_exp plan --repeat 100 --group_num 100
+```
+
+Queue the experiments for execution
+```sh
+dpbench_exp launch --debug
+```
+
+## How to run dp libraries in the benchmark
+
+Run a specific library with the CLI
+
+```sh
+dpbench_run <library> <operation> <input_file> <output_file> <other options>
+```
+
+For example:
+```sh
+dpbench_run pydp sum data/1.csv data/1.json -f -r 1000
+```
 
 ### Generating synthetic data
 

@@ -13,6 +13,14 @@ from dp_benchmark.library_workload.baseline import evaluate as baseline_evaluate
 
 
 def evaluate_library(library, mode, query, input_file, eps, quant, repeat, python_command, external_sample_interval):
+    # handle the handy query types
+    if query == "quantile25":
+        query = "quantile"
+        quant = 0.25
+    elif query == "quantile75":
+        query = "quantile"
+        quant = 0.75
+
     result = {
         "library": library,
         "mode": mode,
@@ -26,7 +34,10 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
     }
     
     # run the workload, merge the result
-    if mode == "internal":
+    if mode == "plain":
+        evaluate_func = importlib.import_module(f'dp_benchmark.library_workload.{library}').evaluate
+        result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, repeat)
+    elif mode == "internal":
         evaluate_func = importlib.import_module(f'dp_benchmark.library_workload.{library}').evaluate
         dp_results, measurements = measure_func_workload(evaluate_func, {
             "query": query,
@@ -76,7 +87,7 @@ def main(unparsed_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", "-v", action="version", version="dpbench 0.0")
     parser.add_argument("library", choices=["baseline", "diffprivlib", "opendp", "pydp", "openmind_pydp"])
-    parser.add_argument("query", choices=["count", "sum", "mean", "var", "median", "quantile"])
+    parser.add_argument("query", choices=["count", "sum", "mean", "var", "median", "quantile",  "quantile25", "quantile75"])
     parser.add_argument("input_file")
     parser.add_argument("output_file")
     parser.add_argument("--mode", "-m", choices=["internal", "external"], default="internal")
@@ -102,7 +113,7 @@ def main(unparsed_args=None):
 
     # handle quantile value
     if args.query != "quantile" and args.quant is not None:
-        raise argparse.ArgumentError("quantile is only applicable to query=quantile")
+        raise argparse.ArgumentError("quantile argument is only applicable to query=quantile")
     if args.query == "quantile" and args.quant is None:
         print("Query is set to quantile, quant is forced to set to 0.25.", file=sys.stderr)
         args.quant = 0.25

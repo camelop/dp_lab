@@ -110,5 +110,6 @@ venv.bak/
 .examples/data
 
 desktop.ini
-data
+data/skew*
 examples
+exp.db.json
