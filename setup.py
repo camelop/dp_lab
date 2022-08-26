@@ -14,7 +14,7 @@ setup(
         "scipy",
         "diffprivlib==0.5.2",
         "python-dp==1.1.1",
-        # "opendp==0.4.0",
+        "opendp==0.5.0",
     ],
     entry_points={
         'console_scripts': [
