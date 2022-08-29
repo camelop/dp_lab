@@ -86,7 +86,7 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
 def main(unparsed_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", "-v", action="version", version="dpbench 0.0")
-    parser.add_argument("library", choices=["baseline", "diffprivlib", "pydp", "opendp", "chorus"])
+    parser.add_argument("library", choices=["baseline", "diffprivlib", "pydp", "opendp", "tmlt", "chorus"])
     parser.add_argument("query", choices=["count", "sum", "mean", "var", "median", "quantile",  "quantile25", "quantile75"])
     parser.add_argument("input_file")
     parser.add_argument("output_file")

@@ -7,6 +7,14 @@ cd dp_benchmark
 pip install -e .
 ```
 
+To use [tmlt](https://docs.tmlt.dev/analytics/latest/installation.html)
+```
+export PYSPARK_PYTHON=/usr/bin/python3
+sudo apt install openjdk-8-jre-headless
+pip3 install -i https://d3p0voevd56kj6.cloudfront.net python-flint
+pip3 install tmlt.analytics
+```
+
 ## How to run experiments in the benchmark
 
 Generate the experiment commands, this will generate an `./exp.db.json` file under the working directory (you can also use `--location` to specify a different place).
