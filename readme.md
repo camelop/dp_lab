@@ -11,10 +11,10 @@ This repo targets to provide a unified interface to access and evaluate the same
 - QUANTILE
 
 **Currently supported libraries**:
-- diffprivlib 0.5.2 [[Homepage](https://github.com/IBM/differential-privacy-library)] [[Workload](./src/dp_benchmark/library_workload/diffprivlib.py)]
-- python-dp 1.1.1 [[Homepage](https://github.com/OpenMined/PyDP)] [[Workload](./src/dp_benchmark/library_workload/pydp.py)]
-- opendp 0.5.0 [[Homepage](https://opendp.org/)] [[Workload](./src/dp_benchmark/library_workload/opendp.py)]
-- tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Workload](./src/dp_benchmark/library_workload/tmlt.py)]
+- diffprivlib 0.5.2 [[Homepage](https://github.com/IBM/differential-privacy-library)] [[Example Usage](./src/dp_benchmark/library_workload/diffprivlib.py)]
+- python-dp 1.1.1 [[Homepage](https://github.com/OpenMined/PyDP)] [[Example Usage](./src/dp_benchmark/library_workload/pydp.py)]
+- opendp 0.5.0 [[Homepage](https://opendp.org/)] [[Example Usage](./src/dp_benchmark/library_workload/opendp.py)]
+- tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Example Usage](./src/dp_benchmark/library_workload/tmlt.py)]
 - chorus [[Homepage](https://github.com/uvm-plaid/chorus)] (coming soon)
 
 ![dp_bench_architecture](./img/dp_bench_architecture.png)
