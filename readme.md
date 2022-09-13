@@ -1,5 +1,7 @@
 # Benchmarking Differential Privacy Aggregation Operation 
 
+![dp_bench_architecture](./img/dp_bench_architecture.png)
+
 This repo targets to provide a unified interface to access and evaluate the same aggregation functionalities in different open-source differential privacy (DP) libraries. With a simple CLI, one can choose the library, the aggregation function, and many other experimental parameters and apply the specified DP measurement to data stored in a `.csv` file. The repo also provides both synthetic and real-world example datasets for evaluation purposes. Evaluation results are stored in a `.json` file and metrics are provided for repeated experiments. The repo also provides a CLI tool to generate configuration groups for larger-scale comparison experiments. 
 
 **Currently supported aggregation operations**: 
@@ -16,8 +18,6 @@ This repo targets to provide a unified interface to access and evaluate the same
 - opendp 0.5.0 [[Homepage](https://opendp.org/)] [[Example Usage](./src/dp_benchmark/library_workload/opendp.py)]
 - tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Example Usage](./src/dp_benchmark/library_workload/tmlt.py)]
 - chorus [[Homepage](https://github.com/uvm-plaid/chorus)] (coming soon)
-
-![dp_bench_architecture](./img/dp_bench_architecture.png)
 
 ## Installation
 
