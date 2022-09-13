@@ -1,3 +1,9 @@
+# Benchmarking Differential Privacy Aggregation Operation 
+
+This repo targets to provide a unified interface to access and evaluate same aggregation functionalities in different open-source differential privacy (dp) libraries. With a simple CLI, one can choose the library, the aggregation function as well as many other experimental parameters, and apply the specified dp measurement to data stored in a `.csv` file. Evaluation results are stored in a `.json` file and metrics are provided for repeated experiments. The repo also provides a CLI tool to generate configuration groups for larger-scale comparison experiments. 
+
+![dp_bench_architecture](./img/dp_bench_architecture.png)
+
 ## Installation
 
 Clone the repo, switch the working directory, and install the dependencies
