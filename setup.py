@@ -32,7 +32,7 @@ setup(
         "jpype1",
         "diffprivlib==0.5.2",
         "python-dp==1.1.1",
-        "opendp==0.5.0",
+        "opendp==0.6.1",
     ],
     entry_points = {
         'console_scripts': [

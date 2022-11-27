@@ -1,7 +1,7 @@
 import numpy as np
-from opendp.trans import make_split_dataframe, make_select_column, make_cast, make_impute_constant, make_count, make_clamp, make_bounded_sum, make_bounded_resize, make_sized_bounded_mean, make_sized_bounded_variance
+from opendp.transformations import make_split_dataframe, make_select_column, make_cast, make_impute_constant, make_count, make_clamp, make_bounded_sum, make_bounded_resize, make_sized_bounded_mean, make_sized_bounded_variance
 # https://docs.opendp.org/en/stable/api/python/opendp.trans.html
-from opendp.meas import make_base_discrete_laplace, make_base_laplace
+from opendp.measurements import make_base_discrete_laplace, make_base_laplace
 from opendp.mod import enable_features, binary_search_param
 
 enable_features('contrib')
