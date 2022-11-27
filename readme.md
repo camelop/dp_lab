@@ -19,6 +19,10 @@ This repo targets to provide a unified interface to access and evaluate the same
 - tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Example Usage](./src/dplab/library_workload/tmlt.py)]
 - chorus [[Homepage](https://github.com/uvm-plaid/chorus)] [[Example Usage](./src/dplab/library_workload/chorus.py)]
 
+## 1-Min Tutorial
+
+Get hands-on in 1 minute with [**our tutorial notebook**](https://colab.research.google.com/drive/1jtsiCW-pQwOlIlQHpKgN_PbSjpReiTIw?usp=sharing).
+
 ## Installation
 
 Clone the repo, switch the working directory, and install the dependencies
