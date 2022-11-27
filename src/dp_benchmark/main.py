@@ -32,7 +32,7 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
         "external_sample_interval": external_sample_interval,
         "_workload_dir": WORKLOAD_DIR,
     }
-    
+
     # run the workload, merge the result
     if mode == "plain":
         evaluate_func = importlib.import_module(f'dp_benchmark.library_workload.{library}').evaluate
@@ -49,6 +49,10 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
         if isinstance(dp_results, Exception):
             raise(dp_results)
         result["_dp_results"] = dp_results
+        if library == "chorus":
+            # cannot trace memory usage of Chorus in the internal mode
+            measurements["internal_memory_final"] = None
+            measurements["internal_memory_peak"] = None
         result.update(measurements)
     elif mode == "external":
         with tempfile.NamedTemporaryFile() as fp:
