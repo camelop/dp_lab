@@ -9,7 +9,9 @@ import scipy.stats as st
 import tqdm
 from tinydb import TinyDB, Query
 
-from dp_benchmark.main import evaluate_library
+from dplab._version import __version__
+from dplab.main import evaluate_library
+
 
 #% Datasets
 
@@ -72,7 +74,7 @@ EPSILONS = [10**_ for _ in range(-2, 2)]
 
 def main(unparsed_args=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", "-v", action="version", version="dpbench 0.0")
+    parser.add_argument("--version", "-v", action="version", version=f"dplab {__version__}")
     parser.add_argument("operation", choices=["plan", "launch"])
     parser.add_argument("--location", "-l", type=str)
     parser.add_argument("--dataset_folder", "-d", type=str)
@@ -130,7 +132,7 @@ def main(unparsed_args=None):
                                 "external_sample_interval": 0.01,
                             },
                             "group_num": args.group_num,
-                            "equivalent_cmd": f"dpbench_run {library} {query_type} {input_file} {output_file} -e {epsilon} -r {args.repeat} --external_sample_interval 0.01",
+                            "equivalent_cmd": f"dplab_run {library} {query_type} {input_file} {output_file} -e {epsilon} -r {args.repeat} --external_sample_interval 0.01",
                             "result": None,
                         }
                         plans.append(plan)

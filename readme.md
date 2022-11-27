@@ -2,7 +2,7 @@
 
 This repo targets to provide a unified interface to access and evaluate the same aggregation functionalities in different open-source differential privacy (DP) libraries. With a simple CLI, one can choose the library, the aggregation function, and many other experimental parameters and apply the specified DP measurement to data stored in a `.csv` file. The repo also provides both synthetic and real-world example datasets for evaluation purposes. Evaluation results are stored in a `.json` file and metrics are provided for repeated experiments. The repo also provides a CLI tool to generate configuration groups for larger-scale comparison experiments. 
 
-![dp_bench_architecture](./img/dp_bench_architecture.png)
+![dplab_architecture](./img/dplab_architecture.png)
 
 **Currently supported aggregation operations**: 
 - COUNT
@@ -13,18 +13,18 @@ This repo targets to provide a unified interface to access and evaluate the same
 - QUANTILE
 
 **Currently supported libraries**:
-- diffprivlib 0.5.2 [[Homepage](https://github.com/IBM/differential-privacy-library)] [[Example Usage](./src/dp_benchmark/library_workload/diffprivlib.py)]
-- python-dp 1.1.1 [[Homepage](https://github.com/OpenMined/PyDP)] [[Example Usage](./src/dp_benchmark/library_workload/pydp.py)]
-- opendp 0.5.0 [[Homepage](https://opendp.org/)] [[Example Usage](./src/dp_benchmark/library_workload/opendp.py)]
-- tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Example Usage](./src/dp_benchmark/library_workload/tmlt.py)]
-- chorus [[Homepage](https://github.com/uvm-plaid/chorus)] [[Example Usage](./src/dp_benchmark/library_workload/chorus.py)]
+- diffprivlib 0.5.2 [[Homepage](https://github.com/IBM/differential-privacy-library)] [[Example Usage](./src/dplab/library_workload/diffprivlib.py)]
+- python-dp 1.1.1 [[Homepage](https://github.com/OpenMined/PyDP)] [[Example Usage](./src/dplab/library_workload/pydp.py)]
+- opendp 0.5.0 [[Homepage](https://opendp.org/)] [[Example Usage](./src/dplab/library_workload/opendp.py)]
+- tmlt.analytics 0.4.1 [[Homepage](https://docs.tmlt.dev/analytics/latest/index.html)] [[Example Usage](./src/dplab/library_workload/tmlt.py)]
+- chorus [[Homepage](https://github.com/uvm-plaid/chorus)] [[Example Usage](./src/dplab/library_workload/chorus.py)]
 
 ## Installation
 
 Clone the repo, switch the working directory, and install the dependencies
 ```
-git clone ***
-cd dp_benchmark
+git clone git@github.com:camelop/dp_lab.git
+cd dp_lab
 pip install -e .
 ```
 
@@ -44,12 +44,12 @@ To use [chorus](https://github.com/uvm-plaid/chorus), please make sure you have 
 Generate the experiment commands, this will generate an `./exp.db.json` file under the working directory (you can also use `--location` to specify a different place).
 
 ```sh
-dpbench_exp plan --repeat 100 --group_num 100
+dplab_exp plan --repeat 100 --group_num 100
 ```
 
 Queue the experiments for execution
 ```sh
-dpbench_exp launch --debug
+dplab_exp launch --debug
 ```
 
 ## How to run dp libraries in the benchmark
@@ -57,13 +57,26 @@ dpbench_exp launch --debug
 Run a specific library with the CLI
 
 ```sh
-dpbench_run <library> <operation> <input_file> <output_file> <other options>
+dplab_run <library> <operation> <input_file> <output_file> <other options>
 ```
 
 For example:
 ```sh
-dpbench_run pydp sum data/1.csv data/1.json -f -r 1000
+dplab_run pydp sum data/1.csv data/1.json -f -r 1000
 ```
+
+Other options include:
+- `mode`: Evaluation mode, one can choose from "plain" (no timing/mem measurement), "internal" (internal measurement), or "external" (external tracking).
+- `epsilon`: DP parameter.
+- `quant`: Quantile value for QUANTILE operation, a float number between 0 and 1.
+- `repeat`: How many time should the evaluation repeat.
+- `force`: Force to overwrite the output file.
+- `debug`: Include debugging information in the output file.
+- `python_command`: Python command used to run the script in the external mode.
+- `external_sample_interval`: timing/mem consumption sample interval in the external mode.
+
+For more information, please check [the main entry file](./src/dplab/main.py).
+
 
 ### Generating synthetic data
 

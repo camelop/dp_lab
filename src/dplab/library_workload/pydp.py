@@ -1,7 +1,7 @@
 import numpy as np
 from pydp.algorithms import laplacian as pydp
 
-from dp_benchmark.library_workload.util import read_input_file, workload_main
+from dplab.library_workload.util import read_input_file, workload_main
 
 
 def evaluate(query, input_file, eps, quant, repeat):

@@ -5,7 +5,7 @@ from tmlt.analytics.privacy_budget import PureDPBudget
 from tmlt.analytics.query_builder import QueryBuilder
 from tmlt.analytics.session import Session
 
-from dp_benchmark.library_workload.util import read_input_file, workload_main
+from dplab.library_workload.util import read_input_file, workload_main
 
 
 spark = (

@@ -7,9 +7,10 @@ import tempfile
 import importlib
 import numpy as np
 
-from dp_benchmark.monitor import measure_func_workload, measure_command_workload
-from dp_benchmark.library_workload import WORKLOAD_DIR
-from dp_benchmark.library_workload.baseline import evaluate as baseline_evaluate
+from dplab._version import __version__
+from dplab.monitor import measure_func_workload, measure_command_workload
+from dplab.library_workload import WORKLOAD_DIR
+from dplab.library_workload.baseline import evaluate as baseline_evaluate
 
 
 def evaluate_library(library, mode, query, input_file, eps, quant, repeat, python_command, external_sample_interval):
@@ -35,10 +36,10 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
 
     # run the workload, merge the result
     if mode == "plain":
-        evaluate_func = importlib.import_module(f'dp_benchmark.library_workload.{library}').evaluate
+        evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
         result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, repeat)
     elif mode == "internal":
-        evaluate_func = importlib.import_module(f'dp_benchmark.library_workload.{library}').evaluate
+        evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
         dp_results, measurements = measure_func_workload(evaluate_func, {
             "query": query,
             "input_file": input_file,
@@ -49,8 +50,8 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
         if isinstance(dp_results, Exception):
             raise(dp_results)
         result["_dp_results"] = dp_results
-        if library == "chorus":
-            # cannot trace memory usage of Chorus in the internal mode
+        if library in ["tmlt", "chorus"]:
+            # cannot trace memory usage of tmlt & Chorus in the internal mode
             measurements["internal_memory_final"] = None
             measurements["internal_memory_peak"] = None
         result.update(measurements)
@@ -59,7 +60,7 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
             output_file = fp.name
             external_measurements = measure_command_workload([
                 python_command, "-m", 
-                f"dp_benchmark.library_workload.{library}",
+                f"dplab.library_workload.{library}",
                 query, input_file, output_file,
                 "--epsilon",  str(eps),
                 *([] if quant is None else ["--quant", str(quant)]),
@@ -89,12 +90,12 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
 
 def main(unparsed_args=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", "-v", action="version", version="dpbench 0.0")
+    parser.add_argument("--version", "-v", action="version", version=f"dplab {__version__}")
     parser.add_argument("library", choices=["baseline", "diffprivlib", "pydp", "opendp", "tmlt", "chorus"])
     parser.add_argument("query", choices=["count", "sum", "mean", "var", "median", "quantile",  "quantile25", "quantile75"])
     parser.add_argument("input_file")
     parser.add_argument("output_file")
-    parser.add_argument("--mode", "-m", choices=["internal", "external"], default="internal")
+    parser.add_argument("--mode", "-m", choices=["plain", "internal", "external"], default="internal")
     parser.add_argument("--epsilon", "-e", type=float, default=1)  # default: 0.1 / 1 / 10
     parser.add_argument("--quant", "-q", type=float, default=None)
     parser.add_argument("--repeat", "-r", type=int, default=1)

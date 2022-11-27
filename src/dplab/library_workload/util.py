@@ -4,7 +4,7 @@ import argparse
 from functools import partial
 import numpy as np
 
-from dp_benchmark.monitor import measure_func_workload
+from dplab.monitor import measure_func_workload
 
 
 read_input_file = partial(np.loadtxt, skiprows=0)

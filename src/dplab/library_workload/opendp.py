@@ -7,7 +7,7 @@ from opendp.mod import enable_features, binary_search_param
 enable_features('contrib')
 enable_features("floating-point")
 
-from dp_benchmark.library_workload.util import read_input_file, workload_main
+from dplab.library_workload.util import read_input_file, workload_main
 
 
 def evaluate(query, input_file, eps, quant, repeat):
