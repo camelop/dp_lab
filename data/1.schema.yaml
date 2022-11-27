@@ -1,0 +1,9 @@
+---
+databases:
+- database: "default_db"
+  dialect: "hive"
+  namespace: ""
+  tables:
+  - table: "t"
+    columns:
+    - name: "v"
