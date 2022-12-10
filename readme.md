@@ -25,22 +25,28 @@ Get hands-on in 1 minute with [**our tutorial notebook**](https://colab.research
 
 ## Installation
 
-Clone the repo, switch the working directory, and install the dependencies
+To install dplab, one can **use the package on pypi**
+```sh
+pip install dplab
 ```
-git clone git@github.com:camelop/dp_lab.git
-cd dp_lab
+
+Or **with source code**: clone the repo, switch the working directory, and install the dependencies
+```sh
+git clone git@github.com:camelop/dp-lab.git
+cd dp-lab
 pip install -e .
 ```
 
 To use [tmlt](https://docs.tmlt.dev/analytics/latest/installation.html)
-```
+```sh
 export PYSPARK_PYTHON=/usr/bin/python3
 sudo apt install openjdk-8-jre-headless
 pip3 install -i https://d3p0voevd56kj6.cloudfront.net python-flint
 pip3 install tmlt.analytics
 ```
 
-To use [chorus](https://github.com/uvm-plaid/chorus), please make sure you have Java runtime installed.
+To use [chorus](https://github.com/uvm-plaid/chorus), please make sure you have Java runtime installed. 
+(If you have already installed tmlt, it should be fine.)
 
 
 ## How to run experiments in the benchmark
