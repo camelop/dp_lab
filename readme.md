@@ -32,7 +32,7 @@ pip install dplab
 
 Or **with source code**: clone the repo, switch the working directory, and install the dependencies
 ```sh
-git clone git@github.com:camelop/dp-lab.git
+git clone git@github.com:camelop/dp_lab.git
 cd dp-lab
 pip install -e .
 ```
