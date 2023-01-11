@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import argparse
 from functools import partial
@@ -7,7 +8,11 @@ import numpy as np
 from dplab.monitor import measure_func_workload
 
 
-read_input_file = partial(np.loadtxt, skiprows=0)
+def read_input_file(file):
+    current = time.time()
+    result = partial(np.loadtxt, skiprows=0)(file)
+    time_used = time.time() - current
+    return result, time_used
 
 
 def workload_main(evaluate_func, unparsed_args=None):
@@ -35,7 +40,7 @@ def workload_main(evaluate_func, unparsed_args=None):
         raise FileNotFoundError(f"Input file '{args.input_file}' does not exist")        
     if os.path.isfile(args.output_file) and not args.force:
         raise FileExistsError(f"Output file '{args.output_file}' already exists, please use --force to overwrite")
-    dp_results, measurements = measure_func_workload(evaluate_func, {
+    (dp_results, in_func_measurement), measurements = measure_func_workload(evaluate_func, {
             "query": args.query,
             "input_file": args.input_file,
             "eps": args.epsilon,
@@ -48,7 +53,7 @@ def workload_main(evaluate_func, unparsed_args=None):
     # save result to output file
     result = {
         "dp_results": dp_results,
-        "measurements": measurements,
+        "measurements": {**measurements, **in_func_measurement},
     }
     with open(args.output_file, "w") as f:
         json.dump(result, f)

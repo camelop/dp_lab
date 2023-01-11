@@ -1,3 +1,4 @@
+import time
 import os
 import numpy as np
 import sqlite3
@@ -33,8 +34,11 @@ from dplab.library_workload.util import read_input_file, workload_main
 
 
 def evaluate(query, input_file, eps, quant, lb, ub, repeat):
-    data = read_input_file(input_file)
-    assert lb is None and ub is None, "Chorus does not support specified bounds."
+    data, pre_loading_time = read_input_file(input_file)
+    lb = np.min(data) if lb is None else lb
+    ub = np.max(data) if ub is None else ub
+
+    nw = time.time()
     with tempfile.NamedTemporaryFile() as tmp_db, tempfile.NamedTemporaryFile() as tmp_schema:
         conn = sqlite3.connect(tmp_db.name)
         c = conn.cursor()
@@ -44,15 +48,16 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
         conn.close()
         tmp_schema.write(SCHEMA.encode())
         tmp_schema.flush()
+        db_preparation_time = time.time() - nw
 
         results = []
         for i in range(repeat):
             if query == "count":
-                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT COUNT(v) FROM t", "LaplaceMechClipping", eps, l, u).run()
+                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT COUNT(v) FROM t", "LaplaceMechClipping", eps, lb, ub).run()
             elif query == "sum":
-                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT SUM(v) FROM t", "LaplaceMechClipping", eps, l, u).run()
+                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT SUM(v) FROM t", "LaplaceMechClipping", eps, lb, ub).run()
             elif query == "mean":
-                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT AVG(v) FROM t", "AverageMechClipping", eps, l, u).run()
+                result = QueryWithDP(tmp_db.name, tmp_schema.name, "SELECT AVG(v) FROM t", "AverageMechClipping", eps, lb, ub).run()
             elif query == "var":
                 raise NotImplementedError("Chorus(0.1.3) does not support var.")
             elif query == "median":
@@ -62,7 +67,7 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
             else:
                 raise ValueError("Unknown query: {}".format(query))
             results.append(result)
-        return results
+        return results, {"loading_time": pre_loading_time + db_preparation_time, "_pre_loading_time": pre_loading_time, "_db_preparation_time": db_preparation_time}
 
 
 if __name__ == "__main__":

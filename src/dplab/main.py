@@ -39,10 +39,10 @@ def evaluate_library(library, mode, query, input_file, eps, quant, lb, ub, repea
     # run the workload, merge the result
     if mode == "plain":
         evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
-        result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, lb, ub, repeat)
+        result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, lb, ub, repeat)[0]
     elif mode == "internal":
         evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
-        dp_results, measurements = measure_func_workload(evaluate_func, {
+        r, measurements = measure_func_workload(evaluate_func, {
             "query": query,
             "input_file": input_file,
             "eps": eps,
@@ -51,9 +51,11 @@ def evaluate_library(library, mode, query, input_file, eps, quant, lb, ub, repea
             "ub": ub,
             "repeat": repeat,
         })
-        if isinstance(dp_results, Exception):
-            raise(dp_results)
+        if isinstance(r, Exception):
+            raise(r)
+        dp_results, in_func_measurement = r
         result["_dp_results"] = dp_results
+        result.update(in_func_measurement)
         if library in ["tmlt", "chorus"]:
             # cannot trace memory usage of tmlt & Chorus in the internal mode
             measurements["internal_memory_final"] = None
@@ -86,8 +88,8 @@ def evaluate_library(library, mode, query, input_file, eps, quant, lb, ub, repea
         raise ValueError(f"Unknown mode '{mode}'")
 
     # compare with std result from baseline (no dp)
-    data_size = baseline_evaluate("count", input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0]
-    truth_result = baseline_evaluate(query, input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0]
+    data_size = baseline_evaluate("count", input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0][0]
+    truth_result = baseline_evaluate(query, input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0][0]
     result["_truth_result"] = truth_result
     
     # calculate the dp error

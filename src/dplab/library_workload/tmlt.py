@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from pyspark import SparkFiles
 from pyspark.sql import SparkSession
@@ -16,11 +17,13 @@ spark = (
 )
 
 def evaluate(query, input_file, eps, quant, lb, ub, repeat):
-    data = read_input_file(input_file)
+    data, pre_loading_time = read_input_file(input_file)
     lb = np.min(data) if lb is None else lb
     ub = np.max(data) if ub is None else ub
 
+    nw = time.time()
     data_df = spark.read.csv(SparkFiles.get(input_file), header=False, inferSchema=True)
+    spark_csv_loading_time = time.time() - nw
 
     results = []
     for i in range(repeat):
@@ -48,7 +51,7 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
             privacy_budget=PureDPBudget(epsilon=eps)
         ).first()[0]
         results.append(result)
-    return results
+    return results, {"loading_time": pre_loading_time + spark_csv_loading_time, "_pre_loading_time": pre_loading_time, "_spark_csv_loading_time": spark_csv_loading_time}
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from dplab.library_workload.util import read_input_file, workload_main
 
 
 def evaluate(query, input_file, eps, quant, lb, ub, repeat):
-    data = read_input_file(input_file)
+    data, pre_loading_time = read_input_file(input_file)
     lb = np.min(data) if lb is None else lb
     ub = np.max(data) if ub is None else ub
     bounds = (lb, ub)
@@ -26,7 +26,7 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
         else:
             raise ValueError("Unknown query: {}".format(query))
         results.append(result)
-    return results
+    return results, {"loading_time": pre_loading_time, "_pre_loading_time": pre_loading_time}
 
 
 if __name__ == "__main__":
