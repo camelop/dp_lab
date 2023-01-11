@@ -51,7 +51,7 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
             privacy_budget=PureDPBudget(epsilon=eps)
         ).first()[0]
         results.append(result)
-    return results, {"loading_time": pre_loading_time + spark_csv_loading_time, "_pre_loading_time": pre_loading_time, "_spark_csv_loading_time": spark_csv_loading_time}
+    return results, {"loading_time": pre_loading_time + spark_csv_loading_time, "pre_loading_time": pre_loading_time, "spark_csv_loading_time": spark_csv_loading_time}
 
 
 if __name__ == "__main__":

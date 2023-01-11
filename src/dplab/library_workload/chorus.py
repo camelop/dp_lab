@@ -67,7 +67,7 @@ def evaluate(query, input_file, eps, quant, lb, ub, repeat):
             else:
                 raise ValueError("Unknown query: {}".format(query))
             results.append(result)
-        return results, {"loading_time": pre_loading_time + db_preparation_time, "_pre_loading_time": pre_loading_time, "_db_preparation_time": db_preparation_time}
+        return results, {"loading_time": pre_loading_time + db_preparation_time, "pre_loading_time": pre_loading_time, "db_preparation_time": db_preparation_time}
 
 
 if __name__ == "__main__":
