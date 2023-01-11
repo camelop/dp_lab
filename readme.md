@@ -77,8 +77,10 @@ dplab_run pydp sum data/1.csv data/1.json -f -r 1000
 
 Other options include:
 - `mode`: Evaluation mode, one can choose from "plain" (no timing/mem measurement), "internal" (internal measurement), or "external" (external tracking).
-- `epsilon`: DP parameter.
+- `epsilon`: DP parameter, default is set to `1`.
 - `quant`: Quantile value for QUANTILE operation, a float number between 0 and 1.
+- `lb`: The optional value lower bound estimation used when applying certain differential privacy aggregations.
+- `ub`: The optional value upper bound estimation used when applying certain differential privacy aggregations.
 - `repeat`: How many time should the evaluation repeat.
 - `force`: Force to overwrite the output file.
 - `debug`: Include debugging information in the output file.

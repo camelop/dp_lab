@@ -32,9 +32,9 @@ from chorus.integration import QueryWithDP
 from dplab.library_workload.util import read_input_file, workload_main
 
 
-def evaluate(query, input_file, eps, quant, repeat):
+def evaluate(query, input_file, eps, quant, lb, ub, repeat):
     data = read_input_file(input_file)
-    bounds = (l, u) = (np.min(data), np.max(data))
+    assert lb is None and ub is None, "Chorus does not support specified bounds."
     with tempfile.NamedTemporaryFile() as tmp_db, tempfile.NamedTemporaryFile() as tmp_schema:
         conn = sqlite3.connect(tmp_db.name)
         c = conn.cursor()

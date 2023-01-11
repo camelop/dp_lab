@@ -3,7 +3,7 @@ import numpy as np
 from dplab.library_workload.util import read_input_file, workload_main
 
 
-def evaluate(query, input_file, eps, quant, repeat):
+def evaluate(query, input_file, eps, quant, lb, ub, repeat):
     data = read_input_file(input_file)
     results = []
     for i in range(repeat):

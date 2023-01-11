@@ -17,6 +17,8 @@ def workload_main(evaluate_func, unparsed_args=None):
     parser.add_argument("output_file")
     parser.add_argument("--epsilon", "-e", type=float, default=1)  # default: 0.1 / 1 / 10
     parser.add_argument("--quant", "-q", type=float, default=None)
+    parser.add_argument("--lb", type=float, default=None)
+    parser.add_argument("--ub", type=float, default=None)
     parser.add_argument("--repeat", "-r", type=int, default=1)
     parser.add_argument("--force", "-f", action="store_true")
     if unparsed_args is not None:
@@ -38,6 +40,8 @@ def workload_main(evaluate_func, unparsed_args=None):
             "input_file": args.input_file,
             "eps": args.epsilon,
             "quant": args.quant,
+            "lb": args.lb,
+            "ub": args.ub,
             "repeat": args.repeat,
     })
 

@@ -10,9 +10,11 @@ enable_features("floating-point")
 from dplab.library_workload.util import read_input_file, workload_main
 
 
-def evaluate(query, input_file, eps, quant, repeat):
+def evaluate(query, input_file, eps, quant, lb, ub, repeat):
     data = read_input_file(input_file)
-    bounds = (np.min(data), np.max(data))
+    lb = np.min(data) if lb is None else lb
+    ub = np.max(data) if ub is None else ub
+    bounds = (lb, ub)
 
     # opendp data processing
     with open(input_file, "r") as f:
@@ -62,9 +64,9 @@ def evaluate(query, input_file, eps, quant, repeat):
             make_chain = lambda s: transformation >> make_base_laplace(s)
             result = get_result_after_search(make_chain)
         elif query == "median":
-            raise NotImplementedError("OpenDP(0.5.0) does not support median/quantile.")
+            raise NotImplementedError("OpenDP(0.6.1) does not support median/quantile.")
         elif query == "quantile":
-            raise NotImplementedError("OpenDP(0.5.0) does not support median/quantile.")
+            raise NotImplementedError("OpenDP(0.6.1) does not support median/quantile.")
         else:
             raise ValueError("Unknown query: {}".format(query))
         results.append(result)

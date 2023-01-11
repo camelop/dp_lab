@@ -4,9 +4,11 @@ import diffprivlib.tools as dplt
 from dplab.library_workload.util import read_input_file, workload_main
 
 
-def evaluate(query, input_file, eps, quant, repeat):
+def evaluate(query, input_file, eps, quant, lb, ub, repeat):
     data = read_input_file(input_file)
-    bounds = (np.min(data), np.max(data))
+    lb = np.min(data) if lb is None else lb
+    ub = np.max(data) if ub is None else ub
+    bounds = (lb, ub)
     results = []
     for i in range(repeat):
         if query == "count":

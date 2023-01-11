@@ -13,7 +13,7 @@ from dplab.library_workload import WORKLOAD_DIR
 from dplab.library_workload.baseline import evaluate as baseline_evaluate
 
 
-def evaluate_library(library, mode, query, input_file, eps, quant, repeat, python_command, external_sample_interval):
+def evaluate_library(library, mode, query, input_file, eps, quant, lb, ub, repeat, python_command, external_sample_interval):
     # handle the handy query types
     if query == "quantile25":
         query = "quantile"
@@ -29,6 +29,8 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
         "input_file": input_file,
         "epsilon": eps,
         "quant": quant,
+        "lb": lb,
+        "ub": ub,
         "repeat": repeat,
         "external_sample_interval": external_sample_interval,
         "_workload_dir": WORKLOAD_DIR,
@@ -37,7 +39,7 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
     # run the workload, merge the result
     if mode == "plain":
         evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
-        result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, repeat)
+        result["_dp_results"] = dp_results = evaluate_func(query, input_file, eps, quant, lb, ub, repeat)
     elif mode == "internal":
         evaluate_func = importlib.import_module(f'dplab.library_workload.{library}').evaluate
         dp_results, measurements = measure_func_workload(evaluate_func, {
@@ -45,6 +47,8 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
             "input_file": input_file,
             "eps": eps,
             "quant": quant,
+            "lb": lb,
+            "ub": ub,
             "repeat": repeat,
         })
         if isinstance(dp_results, Exception):
@@ -64,10 +68,15 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
                 query, input_file, output_file,
                 "--epsilon",  str(eps),
                 *([] if quant is None else ["--quant", str(quant)]),
+                *([] if lb is None else ["--lb", str(lb)]),
+                *([] if ub is None else ["--ub", str(ub)]),
                 "--repeat", str(repeat),
                 "--force"], interval=external_sample_interval)
             with open(output_file, "r") as f:
-                internal_results = json.load(f)
+                try:
+                    internal_results = json.load(f)
+                except json.decoder.JSONDecodeError as e:
+                    raise ValueError(f"Failed to load the result from {output_file}: {e}\nFile content:\n{f.read()}<EOF>")
                 dp_results = internal_results["dp_results"]
                 internal_measurements = internal_results["measurements"]
         result["_dp_results"] = dp_results
@@ -77,8 +86,8 @@ def evaluate_library(library, mode, query, input_file, eps, quant, repeat, pytho
         raise ValueError(f"Unknown mode '{mode}'")
 
     # compare with std result from baseline (no dp)
-    data_size = baseline_evaluate("count", input_file, eps=0, quant=quant, repeat=1)[0]
-    truth_result = baseline_evaluate(query, input_file, eps=0, quant=quant, repeat=1)[0]
+    data_size = baseline_evaluate("count", input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0]
+    truth_result = baseline_evaluate(query, input_file, eps=0, quant=quant, lb=None, ub=None, repeat=1)[0]
     result["_truth_result"] = truth_result
     
     # calculate the dp error
@@ -98,6 +107,8 @@ def main(unparsed_args=None):
     parser.add_argument("--mode", "-m", choices=["plain", "internal", "external"], default="internal")
     parser.add_argument("--epsilon", "-e", type=float, default=1)  # default: 0.1 / 1 / 10
     parser.add_argument("--quant", "-q", type=float, default=None)
+    parser.add_argument("--lb", type=float, default=None)
+    parser.add_argument("--ub", type=float, default=None)
     parser.add_argument("--repeat", "-r", type=int, default=1)
     parser.add_argument("--force", "-f", action="store_true")
     parser.add_argument("--debug", "-d", action="store_true")
@@ -134,7 +145,7 @@ def main(unparsed_args=None):
         raise FileExistsError(f"Output file '{args.output_file}' already exists, please use --force to overwrite")
 
     # evaluate library and write results to output file
-    result = evaluate_library(args.library, args.mode, args.query, args.input_file, args.epsilon, args.quant, args.repeat, args.python_command, args.external_sample_interval)
+    result = evaluate_library(args.library, args.mode, args.query, args.input_file, args.epsilon, args.quant, args.lb, args.ub, args.repeat, args.python_command, args.external_sample_interval)
     if not args.debug:
         keys = list(result.keys())
         for k in keys:
