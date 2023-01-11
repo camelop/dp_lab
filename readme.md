@@ -49,19 +49,6 @@ To use [chorus](https://github.com/uvm-plaid/chorus), please make sure you have 
 (If you have already installed tmlt, it should be fine.)
 
 
-## How to run experiments in the benchmark
-
-Generate the experiment commands, this will generate an `./exp.db.json` file under the working directory (you can also use `--location` to specify a different place).
-
-```sh
-dplab_exp plan --repeat 100 --group_num 100
-```
-
-Queue the experiments for execution
-```sh
-dplab_exp launch --debug
-```
-
 ## How to run dp libraries in the benchmark
 
 Run a specific library with the CLI
@@ -98,4 +85,27 @@ For more information, please check [the main entry file](./src/dplab/main.py).
 # The procedure will generate about 28GB of data
 # To avoid the risk of running out of disk space, you can comment out the performance test lines (Line26-27) in SYN_TARGETS defined in the script
 python3 scripts/gen_data.py
+```
+
+
+## How to run experiments in the benchmark
+
+Generate the experiment commands, this will generate an `./exp.db.json` file under the working directory (you can also use `--location` to specify a different place).
+
+```sh
+dplab_exp plan --repeat 100 --group_num 100
+```
+
+Queue the experiments for execution
+
+```sh
+dplab_exp launch --debug
+```
+
+The command updates the results to `exp.db.json`.
+
+One can potentially view the results via
+
+```sh
+python3 scripts/view_exp_db.py
 ```

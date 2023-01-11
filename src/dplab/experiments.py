@@ -54,17 +54,26 @@ QUERY_TYPES = [
     "mean", 
     "var", 
     "median", 
-    "quantile25",
     "quantile75",
 ]
 
 #% libraries
 
 LIBRARIES = [
+    "baseline", 
     "diffprivlib", 
-    "opendp", 
     "pydp", 
-    "openmind_pydp",
+    "opendp", 
+    "tmlt", 
+    "chorus"
+]
+
+UNSUPPORTED_PAIRS = [
+    ("opendp", "median"),
+    ("opendp", "quantile75"),
+    ("chorus", "var"),
+    ("chorus", "median"),
+    ("chorus", "quantile75"),
 ]
 
 #% epsilon
@@ -106,12 +115,16 @@ def main(unparsed_args=None):
         # write an experiment execution plan to tinydb
         plans = []
         for (experiment_type, dataset) in [
-            *[("A", d) for d in ACCURACY_DATASETS],
+            # *[("A", d) for d in ACCURACY_DATASETS],
             *[("P", d) for d in PERFORMANCE_DATASETS],
         ]:
             for query_type in QUERY_TYPES:
                 for library in LIBRARIES:
-                    for epsilon in EPSILONS:
+                    if (library, query_type) in UNSUPPORTED_PAIRS:
+                        continue  # library does not support the target query type
+                    if experiment_type == "A" and library == "baseline":
+                        continue  # no need to evaluate the baseline library for accuracy
+                    for epsilon in EPSILONS if experiment_type == "A" else [1]:
                         exp_name = f"{experiment_type}__{dataset}__{query_type}__{library}__{epsilon:.0e}"
                         input_file = os.path.join(args.dataset_folder, dataset)
                         output_file = os.path.join(args.location, f"{exp_name}.i.json")
@@ -126,7 +139,9 @@ def main(unparsed_args=None):
                                 "query": query_type,
                                 "input_file": input_file,
                                 "eps": epsilon,
-                                "repeat": args.repeat,
+                                "lb": None,
+                                "ub": None,
+                                "repeat": args.repeat if experiment_type == "A" else 1,
                                 "quant": None,
                                 "python_command": "python3",
                                 "external_sample_interval": 0.01,
@@ -146,25 +161,51 @@ def main(unparsed_args=None):
             if args.debug:
                 print(f"Running experiment {exp['experiment_type']} {exp['dataset']} {exp['evaluate_param']['library']} {exp['evaluate_param']['query']} {exp['evaluate_param']['eps']}", file=sys.stderr)
             result = {}
-            try:
-                r_dp_mres = []
-                r_dp_sases = []
-                for _ in range(exp["group_num"]):
-                    r = evaluate_library(**exp["evaluate_param"])
-                    r_dp_mres.append(r["dp_mre"])
-                    r_dp_sases.append(r["dp_sase"])
-                result["dp_mre"] = r_dp_mres
-                result["dp_sase"] = r_dp_sases
-                # calculate 0.99 mean confidence interval
-                def calculate_stat(data):
-                    l, h = st.t.interval(alpha=0.99, df=len(data)-1, loc=np.mean(data), scale=st.sem(data)) 
-                    return (f"{(l+h)/2:.2} ±{(h-l)/2:.2}", (l+h)/2, l, h)
-                result["dp_mre_ci"] = calculate_stat(r_dp_mres)
-                result["dp_sase_ci"] = calculate_stat(r_dp_sases)
-            except Exception as e:
-                result["error"] = str(e)
+            if exp["experiment_type"] == "A":
+                try:
+                    r_dp_mres = []
+                    r_dp_sases = []
+                    for _ in range(exp["group_num"]):
+                        r = evaluate_library(**exp["evaluate_param"])
+                        r_dp_mres.append(r["dp_mre"])
+                        r_dp_sases.append(r["dp_sase"])
+                    result["dp_mre"] = r_dp_mres
+                    result["dp_sase"] = r_dp_sases
+                    # calculate 0.99 mean confidence interval
+                    def calculate_stat(data):
+                        l, h = st.t.interval(alpha=0.99, df=len(data)-1, loc=np.mean(data), scale=st.sem(data)) 
+                        return (f"{(l+h)/2:.2} ±{(h-l)/2:.2}", (l+h)/2, l, h)
+                    result["dp_mre_ci"] = calculate_stat(r_dp_mres)
+                    result["dp_sase_ci"] = calculate_stat(r_dp_sases)
+                except Exception as e:
+                    result["error"] = str(e)
+            elif exp["experiment_type"] == "P":
+                try:
+                    # external time tracking is more relevant to user experience
+                    # however, exclude the data loading time which is irrelevant and unfair to compare
+                    r_calc_times = []
+                    # resident set size (RSS) is more accurate memory measurement
+                    r_mems = []
+
+                    # one experiment to warm up
+                    evaluate_library(**exp["evaluate_param"])
+
+                    for _ in range(exp["group_num"]):
+                        r = evaluate_library(**exp["evaluate_param"])
+                        assert r["repeat"] == 1, "Performance experiment should have repeat=1 and use group_num for multiple experiments."
+                        r_calc_times.append((r["time"] - r["loading_time"]))
+                        r_mems.append(r["peak_rss_memory"])
+                    result["avg_calc_time"] = sum(r_calc_times) / len(r_calc_times)
+                    result["avg_peak_rss_mem"] = sum(r_mems) / len(r_mems)
+                except Exception as e:
+                    result["error"] = str(e)
+            else:
+                raise ValueError(f"Unknown experiment type: {exp['experiment_type']}")
             if args.debug:
-                print(result, file=sys.stderr)
+                if "error" in result:
+                    print(f"Error: {result['error']}", file=sys.stderr)
+                else:
+                    print(f"Avg calc time: {result['avg_calc_time']*1000:.2f}ms, Avg peak RSS mem: {result['avg_peak_rss_mem']/1e6:.2f}MB", file=sys.stderr)
                 time.sleep(3)
             db.update({"result": result}, Q.experiment_timestamp == exp["experiment_timestamp"])
     else:

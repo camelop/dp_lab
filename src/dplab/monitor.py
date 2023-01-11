@@ -52,8 +52,8 @@ class MonitoredProcess:
                     # we obtain a list of descendants, and the time we actually poll this
                     # descendant's memory usage.
                     pass
-            self.vms_memory_seq.append(vms_memory)
-            self.rss_memory_seq.append(rss_memory)
+            self.vms_memory_seq.append(vms_memory)  # unit: byte
+            self.rss_memory_seq.append(rss_memory)  # unit: byte
         except psutil.NoSuchProcess:
             pass
         return self.check_execution_state()
