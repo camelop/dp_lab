@@ -205,7 +205,10 @@ def main(unparsed_args=None):
                 if "error" in result:
                     print(f"Error: {result['error']}", file=sys.stderr)
                 else:
-                    print(f"Avg calc time: {result['avg_calc_time']*1000:.2f}ms, Avg peak RSS mem: {result['avg_peak_rss_mem']/1e6:.2f}MB", file=sys.stderr)
+                    if exp["experiment_type"] == "A":
+                        print(f"{result}", file=sys.stderr)
+                    elif exp["experiment_type"] == "P":
+                        print(f"Avg calc time: {result['avg_calc_time']*1000:.2f}ms, Avg peak RSS mem: {result['avg_peak_rss_mem']/1e6:.2f}MB", file=sys.stderr)
                 time.sleep(3)
             db.update({"result": result}, Q.experiment_timestamp == exp["experiment_timestamp"])
     else:
