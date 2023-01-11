@@ -115,7 +115,7 @@ def main(unparsed_args=None):
         # write an experiment execution plan to tinydb
         plans = []
         for (experiment_type, dataset) in [
-            # *[("A", d) for d in ACCURACY_DATASETS],
+            *[("A", d) for d in ACCURACY_DATASETS],
             *[("P", d) for d in PERFORMANCE_DATASETS],
         ]:
             for query_type in QUERY_TYPES:
